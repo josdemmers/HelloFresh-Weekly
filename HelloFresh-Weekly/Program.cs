@@ -1,0 +1,84 @@
+﻿using AngleSharp;
+using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
+using System.Text;
+
+namespace HelloFresh_Weekly
+{
+    public class Program
+    {
+        static async Task Main(string[] args)
+        {
+            if (args.Length <= 0) throw new ArgumentException("Please supply arguments.");
+
+            var client = new HttpClient();
+            var filePath = args[0];
+
+            if (!File.Exists(filePath)) throw new FileNotFoundException($"Cannot find file {filePath} to edit.");
+
+            IConfiguration config = Configuration.Default.WithDefaultLoader();
+            string address = "https://www.hellofresh.nl/about/nieuws";
+            IBrowsingContext context = BrowsingContext.New(config);
+            IDocument document = await context.OpenAsync(address);
+            IHtmlCollection<IElement> htmlAnchorElements = document.QuerySelectorAll("a");
+            var recipes = htmlAnchorElements
+                .Where(e => ((IHtmlAnchorElement)e).Href.EndsWith("pdf", StringComparison.OrdinalIgnoreCase) && IsLanDutchRecipe(((IHtmlAnchorElement)e).Href) && !IsModularityRecipe(((IHtmlAnchorElement)e).Href))
+                .Select(ef => ((IHtmlAnchorElement)ef).Href).ToList();
+
+            Console.WriteLine($"Number of recipe files found: {recipes.Count}");
+
+            Directory.CreateDirectory($"Recipes{DateTime.Now.Year}");
+            foreach (var recipe in recipes)
+            {
+                Console.WriteLine($"Downloading: {recipe}");
+
+                var uri = new Uri(recipe);
+
+                await using var s = await client.GetStreamAsync(uri);
+                await using var file = File.Create($"Recipes{DateTime.Now.Year}/{Path.GetFileName(recipe)}");
+                await s.CopyToAsync(file);
+            }
+
+            // Update readme
+            StringBuilder stringBuilder = new StringBuilder();
+            StringWriter stringWriter = new StringWriter(stringBuilder);
+            stringWriter.WriteLine("# HelloFresh-Weekly");
+            stringWriter.WriteLine($"Last update: {DateTime.Now}");
+            stringWriter.WriteLine(string.Empty);
+            foreach (var recipe in recipes)
+            {
+                // Example:
+                // - [49.ALL.1-32.NL.pdf](./Recipes2023/49.ALL.1-32.NL.pdf)
+
+                stringWriter.WriteLine($"- [{Path.GetFileName(recipe)}](./Recipes{DateTime.Now.Year}/{Path.GetFileName(recipe)})");
+            }
+            stringWriter.Flush();
+            stringWriter.Close();
+            File.WriteAllText(filePath, stringBuilder.ToString());
+        }
+
+        private static bool IsLanDutchRecipe(string uri)
+        {
+            var file = Path.GetFileName(uri);
+            return file.Contains(".NL.", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsNormalRecipe(string uri)
+        {
+            var file = Path.GetFileName(uri);
+            return file.Contains(".ALL.", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsAddonRecipe(string uri)
+        {
+            var file = Path.GetFileName(uri);
+            return file.Contains(".ADDON.", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsModularityRecipe(string uri)
+        {
+            var file = Path.GetFileName(uri);
+            return file.Contains(".Modularity.", StringComparison.OrdinalIgnoreCase);
+        }
+    }
+}

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "HelloFresh-Weekly": {
+      "commandName": "Project",
+      "commandLineArgs": "README.md"
+    }
+  }
+}
