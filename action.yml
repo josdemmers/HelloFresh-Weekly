@@ -1,0 +1,16 @@
+name: 'Update HelloFresh recipes'
+description: 'Update HelloFresh recipes and your README.md with weekly recipes'
+branding:
+  icon: arrow-right-circle
+  color: purple
+inputs:
+  file-to-update:
+    description: 'File to update. Default to README.md'
+    required: true
+    default: 'README.md'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.file-to-update }}
+  entrypoint: "/app/entrypoint.sh"
