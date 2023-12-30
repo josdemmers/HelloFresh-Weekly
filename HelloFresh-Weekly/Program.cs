@@ -34,8 +34,11 @@ namespace HelloFresh_Weekly
 
                 var uri = new Uri(recipe);
 
+                // Example:
+                // ./Recipes2023/2023.49.ALL.1-32.NL.pdf
+
                 await using var s = await client.GetStreamAsync(uri);
-                await using var file = File.Create($"Recipes{DateTime.Now.Year}/{Path.GetFileName(recipe)}");
+                await using var file = File.Create($"Recipes{DateTime.Now.Year}/{DateTime.Now.Year}.{Path.GetFileName(recipe)}");
                 await s.CopyToAsync(file);
             }
 
@@ -48,9 +51,9 @@ namespace HelloFresh_Weekly
             foreach (var recipe in recipes)
             {
                 // Example:
-                // - [49.ALL.1-32.NL.pdf](./Recipes2023/49.ALL.1-32.NL.pdf)
+                // - [49.ALL.1-32.NL.pdf](./Recipes2023/2023.49.ALL.1-32.NL.pdf)
 
-                stringWriter.WriteLine($"- [{Path.GetFileName(recipe)}](./Recipes{DateTime.Now.Year}/{Path.GetFileName(recipe)})");
+                stringWriter.WriteLine($"- [{Path.GetFileName(recipe)}](./Recipes{DateTime.Now.Year}/{DateTime.Now.Year}.{Path.GetFileName(recipe)})");
             }
             stringWriter.Flush();
             stringWriter.Close();
