@@ -51,9 +51,9 @@ namespace HelloFresh_Weekly
             foreach (var recipe in recipes)
             {
                 // Example:
-                // - [49.ALL.1-32.NL.pdf](./Recipes2023/2023.49.ALL.1-32.NL.pdf)
+                // - [2023.49.ALL.1-32.NL.pdf](./Recipes2023/2023.49.ALL.1-32.NL.pdf)
 
-                stringWriter.WriteLine($"- [{Path.GetFileName(recipe)}](./Recipes{DateTime.Now.Year}/{DateTime.Now.Year}.{Path.GetFileName(recipe)})");
+                stringWriter.WriteLine($"- [{DateTime.Now.Year}.{Path.GetFileName(recipe)}](./Recipes{DateTime.Now.Year}/{DateTime.Now.Year}.{Path.GetFileName(recipe)})");
             }
             stringWriter.Flush();
             stringWriter.Close();
