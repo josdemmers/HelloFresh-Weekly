@@ -11,8 +11,13 @@ jobs:
     name: Update HelloFresh recipes
     steps:
       # This step checks out a copy of your repository.
+      # Fetch only the root files and listed folders
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            HelloFresh-Weekly
+            Recipes2024
 
       # This step references the directory that contains the action.
       - name: Update HelloFresh recipes and update README.md
