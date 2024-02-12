@@ -2,6 +2,7 @@
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using System.Text;
+using System.Text.Json;
 
 namespace HelloFresh_Weekly
 {
@@ -26,6 +27,35 @@ namespace HelloFresh_Weekly
                 .Select(ef => ((IHtmlAnchorElement)ef).Href).ToList();
 
             Console.WriteLine($"Number of recipe files found: {recipes.Count}");
+
+            if (recipes.Count == 0)
+            {
+                Console.WriteLine($"Starting json alternative...");
+
+                string raw = document.ToHtml();
+                int indexStartJson = raw.IndexOf("{\"props\":{\"pageProps\":");
+                int indexEndJson = raw.IndexOf("</script><script>", indexStartJson);
+
+                if (indexStartJson == -1 || indexEndJson == -1) 
+                {
+                    Console.WriteLine($"Possible new website layout. Unable to find any recipes.");
+                    return;
+                }
+
+                string json = raw.Substring(indexStartJson, indexEndJson - indexStartJson);
+                var helloFreshAsJson = JsonSerializer.Deserialize<HelloFreshAsJson>(json) ?? new HelloFreshAsJson();
+                var recipeSection = helloFreshAsJson.props.pageProps.ssrPayload.contentfulLandingPagesEntries.variationItem.pageVariation.fields.sections.FirstOrDefault(s => s.fields.id.Equals("nlBE-Recipes-Content"));
+                if (recipeSection != null) 
+                {
+                    foreach (var stack in recipeSection.fields.stack)
+                    {
+                        Console.WriteLine($"{stack.title}. Recipes: {stack.description.Split(".pdf").Count()}");
+                    }   
+                }
+
+                Console.WriteLine($"Json parser not yet implemented.");
+                return;
+            }
 
             Directory.CreateDirectory($"Recipes{DateTime.Now.Year}");
             foreach (var recipe in recipes)
