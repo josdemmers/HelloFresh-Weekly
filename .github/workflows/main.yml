@@ -17,7 +17,7 @@ jobs:
         with:
           sparse-checkout: |
             HelloFresh-Weekly
-            Recipes2024
+            Recipes2025
 
       # This step references the directory that contains the action.
       - name: Update HelloFresh recipes and update README.md
