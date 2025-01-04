@@ -3,6 +3,7 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace HelloFresh_Weekly
 {
@@ -50,11 +51,20 @@ namespace HelloFresh_Weekly
                     foreach (var stack in recipeSection.fields.stack)
                     {
                         Console.WriteLine($"{stack.title}. Recipes: {stack.description.Split(".pdf").Count()}");
+                        var matches = Regex.Matches(stack.description, "(assets|downloads).+(NL.pdf)");
+                        
+                        foreach (var match in matches)
+                        {
+                            string recipeUrl = match.ToString() ?? string.Empty;
+                            if (!string.IsNullOrWhiteSpace(recipeUrl) && IsLanDutchRecipe(recipeUrl) && !IsModularityRecipe(recipeUrl))
+                            {
+                                Console.WriteLine($"{recipeUrl}");
+                                recipes.Add($"http://{recipeUrl}");
+                            }                           
+                        }
+
                     }   
                 }
-
-                Console.WriteLine($"Json parser not yet implemented.");
-                return;
             }
 
             Directory.CreateDirectory($"Recipes{DateTime.Now.Year}");
