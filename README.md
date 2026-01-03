@@ -1,9 +1,9 @@
 # HelloFresh-Weekly
-Last update: 12/27/2025 05:23:48
+Last update: 01/03/2026 07:34:52
 
-- [2025.01.ALL.1-32.NL.pdf](./Recipes2025/2025.01.ALL.1-32.NL.pdf)
-- [2025.01.ALL.51-77.NL.pdf](./Recipes2025/2025.01.ALL.51-77.NL.pdf)
-- [2025.01.ADDONS.NL.pdf](./Recipes2025/2025.01.ADDONS.NL.pdf)
-- [2025.52.ALL.1-32.NL.pdf](./Recipes2025/2025.52.ALL.1-32.NL.pdf)
-- [2025.52.ALL.51-77.NL.pdf](./Recipes2025/2025.52.ALL.51-77.NL.pdf)
-- [2025.52.ADDONS.NL.pdf](./Recipes2025/2025.52.ADDONS.NL.pdf)
+- [2026.02.ALL.1-32.NL.pdf](./Recipes2026/2026.02.ALL.1-32.NL.pdf)
+- [2026.02.ALL.51-77.NL.pdf](./Recipes2026/2026.02.ALL.51-77.NL.pdf)
+- [2026.02.ADDONS.NL.pdf](./Recipes2026/2026.02.ADDONS.NL.pdf)
+- [2026.01.ALL.1-32.NL.pdf](./Recipes2026/2026.01.ALL.1-32.NL.pdf)
+- [2026.01.ALL.51-77.NL.pdf](./Recipes2026/2026.01.ALL.51-77.NL.pdf)
+- [2026.01.ADDONS.NL.pdf](./Recipes2026/2026.01.ADDONS.NL.pdf)
