@@ -22,48 +22,28 @@ namespace HelloFresh_Weekly
             string address = "https://www.hellofresh.nl/about/nieuws";
             IBrowsingContext context = BrowsingContext.New(config);
             IDocument document = await context.OpenAsync(address);
-            IHtmlCollection<IElement> htmlAnchorElements = document.QuerySelectorAll("a");
-            var recipes = htmlAnchorElements
-                .Where(e => ((IHtmlAnchorElement)e).Href.EndsWith("pdf", StringComparison.OrdinalIgnoreCase) && IsLanDutchRecipe(((IHtmlAnchorElement)e).Href) && !IsModularityRecipe(((IHtmlAnchorElement)e).Href))
-                .Select(ef => ((IHtmlAnchorElement)ef).Href).ToList();
+            IHtmlCollection<IElement> htmlScriptElements = document.QuerySelectorAll("script");
+            var recipesContainer = htmlScriptElements
+                .Where(e => ((IHtmlScriptElement)e).Id?.Equals("__NEXT_DATA__", StringComparison.OrdinalIgnoreCase) ?? false)
+                ?.FirstOrDefault()?.InnerHtml ?? string.Empty;
 
-            Console.WriteLine($"Number of recipe files found: {recipes.Count}");
-
-            if (recipes.Count == 0)
+            List<string> recipes = new List<string>();
+            var helloFreshAsJson = JsonSerializer.Deserialize<HelloFreshAsJson>(recipesContainer) ?? new HelloFreshAsJson();
+            var recipeSection = helloFreshAsJson.props.pageProps.ssrPayload.contentfulLandingPagesEntries.variationItem.pageVariation.fields.sections.FirstOrDefault(s => s.fields.id.Equals("nlNL-Contentmoduleimagesection"));
+            if (recipeSection != null)
             {
-                Console.WriteLine($"Starting json alternative...");
+                var fields = recipeSection.fields;
+                Console.WriteLine($"{fields.title}. Recipes: {fields.description.Split(".pdf").Count()}");
+                var matches = Regex.Matches(fields.description, "(assets|downloads).+(NL.pdf)");
 
-                string raw = document.ToHtml();
-                int indexStartJson = raw.IndexOf("{\"props\":{\"pageProps\":");
-                int indexEndJson = raw.IndexOf("</script><script>", indexStartJson);
-
-                if (indexStartJson == -1 || indexEndJson == -1) 
+                foreach (var match in matches)
                 {
-                    Console.WriteLine($"Possible new website layout. Unable to find any recipes.");
-                    return;
-                }
-
-                string json = raw.Substring(indexStartJson, indexEndJson - indexStartJson);
-                var helloFreshAsJson = JsonSerializer.Deserialize<HelloFreshAsJson>(json) ?? new HelloFreshAsJson();
-                var recipeSection = helloFreshAsJson.props.pageProps.ssrPayload.contentfulLandingPagesEntries.variationItem.pageVariation.fields.sections.FirstOrDefault(s => s.fields.id.Equals("nlBE-Recipes-Content"));
-                if (recipeSection != null) 
-                {
-                    foreach (var stack in recipeSection.fields.stack)
+                    string recipeUrl = match.ToString() ?? string.Empty;
+                    if (!string.IsNullOrWhiteSpace(recipeUrl) && IsLanDutchRecipe(recipeUrl) && !IsModularityRecipe(recipeUrl))
                     {
-                        Console.WriteLine($"{stack.title}. Recipes: {stack.description.Split(".pdf").Count()}");
-                        var matches = Regex.Matches(stack.description, "(assets|downloads).+(NL.pdf)");
-                        
-                        foreach (var match in matches)
-                        {
-                            string recipeUrl = match.ToString() ?? string.Empty;
-                            if (!string.IsNullOrWhiteSpace(recipeUrl) && IsLanDutchRecipe(recipeUrl) && !IsModularityRecipe(recipeUrl))
-                            {
-                                Console.WriteLine($"{recipeUrl}");
-                                recipes.Add($"http://{recipeUrl}");
-                            }                           
-                        }
-
-                    }   
+                        Console.WriteLine($"{recipeUrl}");
+                        recipes.Add($"http://{recipeUrl}");
+                    }
                 }
             }
 

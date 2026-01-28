@@ -14,50 +14,51 @@ namespace HelloFresh_Weekly
 
     public class Props
     {
-        public PageProps pageProps { get; set; }
+        public PageProps pageProps { get; set; } = new PageProps();
     }
 
     public class PageProps
     {
-        public SsrPayload ssrPayload { get; set; }
+        public SsrPayload ssrPayload { get; set; } = new SsrPayload();
     }
 
     public class SsrPayload
     {
-        public ContentfulLandingPagesEntries contentfulLandingPagesEntries { get; set; }
+        public ContentfulLandingPagesEntries contentfulLandingPagesEntries { get; set; } = new ContentfulLandingPagesEntries();
     }
 
     public class ContentfulLandingPagesEntries
     {
-        public VariationItem variationItem { get; set; }
+        public VariationItem variationItem { get; set; } = new VariationItem();
     }
 
     public class VariationItem
     {
-        public PageVariation pageVariation { get; set; }
+        public PageVariation pageVariation { get; set; } = new PageVariation();
     }
 
     public class PageVariation
     {
-        public Fields fields { get; set; }
+        public Fields fields { get; set; } = new Fields();
     }
 
     public class Fields
     {
-        public string id { get; set; }
-        public string description { get; set; }
-        public List<Section> sections { get; set; }
-        public List<Stack> stack { get; set; }
+        // Note: The field with "id": "nlNL-Contentmoduleimagesection" contains the recipes
+        //       or "title": "Nederlands".
+        public string id { get; set; } = string.Empty;
+        public string title { get; set; } = string.Empty;
+        public string description { get; set; } = string.Empty;
+        public List<Section> sections { get; set; } = new List<Section>();
     }
 
     public class Section
     {
-        // Note: The section with "id": "nlBE-Recipes-Content" contains the recipes
-        public Fields fields { get; set; }
+        public Fields fields { get; set; } = new Fields();
     }
     public class Stack
     {
-        public string description { get; set; }
-        public string title { get; set; }
+        public string description { get; set; } = string.Empty;
+        public string title { get; set; } = string.Empty;
     }
 }
