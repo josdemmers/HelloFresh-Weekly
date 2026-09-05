@@ -34,7 +34,7 @@ namespace HelloFresh_Weekly
             {
                 var fields = recipeSection.fields;
                 Console.WriteLine($"{fields.title}. Recipes: {fields.description.Split(".pdf").Count()}");
-                var matches = Regex.Matches(fields.description, "(assets|downloads).+(NL.pdf)");
+                var matches = Regex.Matches(fields.description, @"https?:\/\/[^\s'\""]+\.pdf|\/\/[^\s'\""]+\.pdf");
 
                 foreach (var match in matches)
                 {
@@ -42,7 +42,7 @@ namespace HelloFresh_Weekly
                     if (!string.IsNullOrWhiteSpace(recipeUrl) && IsLanDutchRecipe(recipeUrl) && !IsModularityRecipe(recipeUrl))
                     {
                         Console.WriteLine($"{recipeUrl}");
-                        recipes.Add($"http://{recipeUrl}");
+                        recipes.Add($"https:{recipeUrl}");
                     }
                 }
             }
